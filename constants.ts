@@ -9,6 +9,7 @@ export const CATEGORIES: { id: Category; name: string }[] = [
   { id: 'outerwear', name: 'Outerwear' },
   { id: 'hats', name: 'Hats' },
   { id: 'eyewear', name: 'Eyewear' },
+  { id: 'combined', name: 'Combined' },
 ];
 
 export const PRODUCTS: Product[] = [
@@ -65,4 +66,6 @@ export const PRODUCTS: Product[] = [
 
   // Additional outerwear discovered
   { id: 40, name: 'Black Leather Jacket', category: 'outerwear', price: '$179.99', imageSrc: '/assets/Black Leather Jacket.jpg' },
+  { id: 41, name: 'Combined_Multi_Color_Chunky_Sneakers_Bold_Fashion_Footwear_V4', category: 'combined', price: '$379.99', imageSrc: '/assets/Combined_Multi_Color_Chunky_Sneakers_Bold_Fashion_Footwear_V4.jpg' },
+  { id: 42, name: 'Combined_Multi_Color_Chunky_Sneakers_Bold_Fashion_Footwear_V5', category: 'combined', price: '$479.99', imageSrc: '/assets/Combined_Multi_Color_Chunky_Sneakers_Bold_Fashion_Footwear_V5.jpg' },
 ];

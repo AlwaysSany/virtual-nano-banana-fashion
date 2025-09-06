@@ -4,11 +4,10 @@ export type Category =
   | 'shirts'
   | 'pants'
   | 'shoes'
-  | 'accessories'
   | 'outerwear'
   | 'hats'
   | 'eyewear'
-  | 'models';
+  | 'combined'
 
 export interface Product {
   id: number;

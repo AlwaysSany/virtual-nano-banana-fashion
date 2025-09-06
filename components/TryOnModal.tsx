@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { Product } from '../types';
-import { editImageWithGemini } from '../services/geminiService';
+import { editImageWithGemini, editImageWithGeminiComposite } from '../services/geminiService';
 import { UploadArea } from './UploadArea';
 import { Spinner } from './Spinner';
 
@@ -9,22 +9,41 @@ interface TryOnModalProps {
   product: Product;
   baseImage: { data: string; mimeType: string } | null;
   onClose: () => void;
-  onStyleFurther: (imageData: {data: string; mimeType: string}) => void;
 }
 
-export const TryOnModal: React.FC<TryOnModalProps> = ({ product, baseImage, onClose, onStyleFurther }) => {
+export const TryOnModal: React.FC<TryOnModalProps> = ({ product, baseImage, onClose }) => {
   const [userImage, setUserImage] = useState<{ file: File; preview: string; } | null>(null);
   const [generatedImage, setGeneratedImage] = useState<{data: string; mimeType: string;} | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [putMeOnOpen, setPutMeOnOpen] = useState(false);
+  const [putMeOnText, setPutMeOnText] = useState('');
+  const [putMeOnLoading, setPutMeOnLoading] = useState(false);
 
   const isAdvancedMode = !!baseImage;
 
   const handleFileChange = (file: File | null) => {
     if (file) {
       setUserImage({ file, preview: URL.createObjectURL(file) });
-      setGeneratedImage(null);
-      setError(null);
+    } else {
+      // Clear the selected image and return to upload state
+      setUserImage(null);
+    }
+    // In both cases, reset generated result and any prior error
+    setGeneratedImage(null);
+    setError(null);
+  };
+
+  const urlToGenerativePart = async (url: string): Promise<{ data: string; mimeType: string } | null> => {
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) return null;
+      const blob = await resp.blob();
+      const arrayBuffer = await blob.arrayBuffer();
+      const b64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
+      return { data: b64, mimeType: blob.type || 'image/jpeg' };
+    } catch {
+      return null;
     }
   };
   
@@ -59,7 +78,20 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({ product, baseImage, onCl
     setGeneratedImage(null);
 
     try {
-      const result = await editImageWithGemini(sourceImage.data, sourceImage.mimeType, product.name);
+      // Prefer composite flow with product reference image if available
+      let result = null as { data: string; mimeType: string } | null;
+      const ref = product.imageSrc ? await urlToGenerativePart(product.imageSrc) : null;
+      if (ref) {
+        result = await editImageWithGeminiComposite({
+          base: sourceImage,
+          references: [ref],
+          defaultProductName: product.name,
+        });
+      }
+      // Fallback to name-only flow
+      if (!result) {
+        result = await editImageWithGemini(sourceImage.data, sourceImage.mimeType, product.name);
+      }
       if (result) {
         setGeneratedImage(result);
       } else {
@@ -80,11 +112,36 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({ product, baseImage, onCl
     link.click();
   };
 
-  const handleStyleFurtherClick = () => {
-    if (generatedImage) {
-        onStyleFurther(generatedImage);
+  // Style Further feature removed
+
+  // Apply further user-specified edits to the generated image
+  const handlePutMeOn = useCallback(async () => {
+    if (!generatedImage) return;
+    const instruction = putMeOnText.trim();
+    if (!instruction) return;
+
+    setPutMeOnLoading(true);
+    setError(null);
+    try {
+      // Try to include current product reference if available
+      const ref = product.imageSrc ? await urlToGenerativePart(product.imageSrc) : null;
+      const result = await editImageWithGeminiComposite({
+        base: generatedImage,
+        references: ref ? [ref] : undefined,
+        instruction,
+        defaultProductName: product.name,
+      });
+      if (result) {
+        setGeneratedImage(result);
+      } else {
+        setError("Sorry, the AI couldn't apply your instruction. Please try again.");
+      }
+    } catch (e: any) {
+      setError(e.message || 'An unexpected error occurred while applying your instruction.');
+    } finally {
+      setPutMeOnLoading(false);
     }
-  };
+  }, [generatedImage, putMeOnText, product.imageSrc, product.name]);
 
   const getButtonState = () => {
     if(isLoading) return { disabled: true, text: 'Generating...'};
@@ -129,6 +186,35 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({ product, baseImage, onCl
             <div className="my-4 text-center">
                 <h3 className="font-bold text-lg mb-4">Here's Your New Look!</h3>
                 <img src={`data:${generatedImage.mimeType};base64,${generatedImage.data}`} alt="Try-on result" className="max-w-full max-h-96 mx-auto rounded-xl shadow-2xl" />
+                <div className="mt-6 text-left bg-white/60 rounded-lg p-4">
+                  <button
+                    className="mb-3 text-sm font-semibold text-[#2aa198] hover:underline"
+                    onClick={() => setPutMeOnOpen(v => !v)}
+                  >
+                    {putMeOnOpen ? 'Hide "Put me on"' : 'Show "Put me on"'}
+                  </button>
+                  {putMeOnOpen && (
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Describe where you want to put yourself?</label>
+                      <textarea
+                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                        placeholder="e.g., Put me on a beach with some friends with this exact look and show me how it would look"
+                        value={putMeOnText}
+                        onChange={(e) => setPutMeOnText(e.target.value)}
+                        rows={3}
+                      />
+                      <div className="mt-3">
+                        <button
+                          onClick={handlePutMeOn}
+                          disabled={putMeOnLoading || !putMeOnText.trim()}
+                          className="bg-[#859900] text-white font-bold py-2 px-4 rounded-lg hover:bg-[#6b7f00] disabled:opacity-50"
+                        >
+                          {putMeOnLoading ? 'Applying...' : 'Apply'}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
             </div>
         )}
 
@@ -145,9 +231,6 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({ product, baseImage, onCl
                 <>
                     <button onClick={handleDownload} className="w-full sm:w-auto bg-[#2aa198] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#1f7f7a] transition transform hover:scale-105">
                         Download
-                    </button>
-                    <button onClick={handleStyleFurtherClick} className="w-full sm:w-auto bg-[#859900] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#6b7f00] transition transform hover:scale-105">
-                        Style Further
                     </button>
                     <button onClick={onClose} className="w-full sm:w-auto bg-gray-200 text-gray-700 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition transform hover:scale-105">
                         Close

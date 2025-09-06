@@ -5,7 +5,6 @@ import { SearchBar } from './components/SearchBar';
 import { CategoryFilter } from './components/CategoryFilter';
 import { ProductGrid } from './components/ProductGrid';
 import { TryOnModal } from './components/TryOnModal';
-import { AdvancedStylePreview } from './components/AdvancedStylePreview';
 import { Product, Category } from './types';
 import { PRODUCTS, CATEGORIES } from './constants';
 
@@ -14,7 +13,6 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState<Category>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [stagedImage, setStagedImage] = useState<{data: string; mimeType: string;} | null>(null);
 
   const filteredProducts = useMemo(() => {
     return PRODUCTS.filter(product => {
@@ -34,10 +32,7 @@ export default function App() {
     setSelectedProduct(null);
   };
   
-  const handleSetStagedImage = (imageData: {data: string; mimeType: string;} | null) => {
-    setStagedImage(imageData);
-    handleCloseModal();
-  };
+  // Style Further feature removed; no staged image pipeline
 
   return (
     <div className="bg-gradient-to-br from-[#002b36] to-[#073642] min-h-screen text-[#eee8d5] font-sans">
@@ -53,12 +48,7 @@ export default function App() {
             />
           </div>
 
-          {stagedImage && (
-            <AdvancedStylePreview
-              stagedImage={stagedImage.data}
-              onClear={() => setStagedImage(null)}
-            />
-          )}
+          {/* Style Further preview removed */}
           
           <ProductGrid products={filteredProducts} onTryNow={handleTryNow} />
         </main>
@@ -67,9 +57,8 @@ export default function App() {
       {isModalOpen && selectedProduct && (
         <TryOnModal
           product={selectedProduct}
-          baseImage={stagedImage}
+          baseImage={null}
           onClose={handleCloseModal}
-          onStyleFurther={handleSetStagedImage}
         />
       )}
     </div>
