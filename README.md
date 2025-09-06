@@ -1,8 +1,6 @@
-# Virtual Fashion Try‑On (React + Google Gemini)
+# Virtual Fashion Try‑On
 
 An AI‑powered web app that lets users virtually try on fashion items (shirts, pants/jeans, shoes, hats, eyewear) using their own photo. Users can continue styling a generated image with additional items using the Advanced Styling mode.
-
-See `Implementation.md` for the project brief, image editing rules, and supported cases.
 
 ## Features
 - Searchable, filterable product catalog (outerwear, hats, eyewear, shoes, shirts, pants)
@@ -16,7 +14,6 @@ See `Implementation.md` for the project brief, image editing rules, and supporte
 - Styling: Tailwind via CDN (see `index.html`)
 - Image editing: Google Gemini 2.5 Flash (image preview) via `@google/genai`
 - Data: `constants.ts` contains categories and products referencing `assets/`
-- Optional backend (FastAPI) present in `backend/` if you choose server‑side processing (with a mock fallback)
 
 ## Project Structure
 ```
@@ -33,17 +30,11 @@ virtual-nano-banana-fashion/
 │  └─ TryOnModal.tsx
 ├─ services/
 │  └─ geminiService.ts          # Gemini 2.5 Flash image edit call
-├─ backend/
-│  └─ app/
-│     ├─ main.py                # Optional FastAPI routes (/api/tryon, /api/advanced-style)
-│     └─ gemini_client.py       # Gemini wrapper (async) + fallback
 ├─ App.tsx                      # App shell, filters, modal state, advanced styling
 ├─ constants.ts                 # Categories + product catalog (images only)
 ├─ types.ts                     # TS types (Product, Category)
 ├─ index.html                   # Vite entry + Tailwind CDN + import maps
 ├─ index.tsx                    # React mount
-├─ Implementation.md            # Product brief & rules (keep tracked)
-├─ fashion_tryon_app.html       # Legacy static prototype (reference)
 ├─ .env                         # Local environment (VITE_GEMINI_API_KEY)
 └─ README.md                    # This file
 ```
@@ -94,9 +85,6 @@ If Advanced Styling doesn’t start, ensure you clicked “Style Further” afte
 - Reads key from `import.meta.env.VITE_GEMINI_API_KEY`
 - Returns `{ data, mimeType }` (base64 image)
 
-Optional server (FastAPI) for server‑side routes and mock fallback:
-- `backend/app/main.py` (endpoints `/api/tryon`, `/api/advanced-style`)
-- `backend/app/gemini_client.py` (async Gemini wrapper + fallback)
 
 ## Troubleshooting
 - Missing key
@@ -120,4 +108,4 @@ Optional server (FastAPI) for server‑side routes and mock fallback:
 - Persist user sessions and saved looks
 
 ## License
-MIT (or your preferred license)
+MIT
