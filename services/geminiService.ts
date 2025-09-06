@@ -65,6 +65,42 @@ export const editImageWithGemini = async (
   }
 };
 
+// Text-to-image generation: create a new product image from a prompt
+export const generateImageFromPrompt = async (
+  prompt: string
+): Promise<{ data: string; mimeType: string } | null> => {
+  try {
+    if (!API_KEY || !ai) {
+      throw new Error("Missing VITE_GEMINI_API_KEY. Add it to your .env and restart dev server.");
+    }
+    const model = 'gemini-2.5-flash-image-preview';
+    const response: GenerateContentResponse = await ai.models.generateContent({
+      model,
+      contents: {
+        parts: [
+          {
+            text: `${prompt}\n\nGenerate a clean e-commerce style product photograph. White or studio-neutral background preferred. Do not add borders, thumbnails, or picture-in-picture. Return only the image.`,
+          },
+        ],
+      },
+      // config: { responseModalities: [Modality.IMAGE, Modality.TEXT] },
+    });
+
+    const candidates = (response as any)?.candidates || [];
+    if (!candidates.length) return null;
+    const parts = candidates[0]?.content?.parts || [];
+    for (const p of parts) {
+      if (p.inlineData && p.inlineData.data) {
+        return { data: p.inlineData.data as string, mimeType: p.inlineData.mimeType || 'image/png' };
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error('generateImageFromPrompt error:', error);
+    throw new Error(error instanceof Error ? error.message : 'Failed to generate image from prompt.');
+  }
+};
+
 
 export const editImageWithGeminiComposite = async (
   params: {

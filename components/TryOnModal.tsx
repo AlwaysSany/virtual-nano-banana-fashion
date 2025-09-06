@@ -36,7 +36,17 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({ product, baseImage, onCl
 
   const urlToGenerativePart = async (url: string): Promise<{ data: string; mimeType: string } | null> => {
     try {
-      const resp = await fetch(url);
+      // Handle data URLs directly
+      if (url.startsWith('data:')) {
+        const match = url.match(/^data:([^;]+);base64,(.*)$/);
+        if (match) {
+          return { data: match[2], mimeType: match[1] };
+        }
+        return null;
+      }
+      // Resolve relative paths to absolute URLs
+      const absoluteUrl = url.startsWith('http') ? url : new URL(url, window.location.origin).toString();
+      const resp = await fetch(absoluteUrl);
       if (!resp.ok) return null;
       const blob = await resp.blob();
       const arrayBuffer = await blob.arrayBuffer();
@@ -110,6 +120,36 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({ product, baseImage, onCl
     link.download = `tryon_${product.name.replace(/\s+/g, '_')}.png`;
     link.href = `data:${generatedImage.mimeType};base64,${generatedImage.data}`;
     link.click();
+  };
+
+  const handleShare = async () => {
+    if (!generatedImage) return;
+    const dataUrl = `data:${generatedImage.mimeType};base64,${generatedImage.data}`;
+    try {
+      // Try Web Share Level 2 with files
+      if (navigator.share && 'canShare' in navigator) {
+        const res = await fetch(dataUrl);
+        const blob = await res.blob();
+        const file = new File([blob], `tryon_${product.name.replace(/\s+/g, '_')}.png`, { type: blob.type || 'image/png' });
+        const shareData: any = {
+          title: 'My Virtual Try-On',
+          text: `Check out how ${product.name} looks on me!`,
+          files: [file],
+        };
+        // @ts-ignore - navigator.canShare may not be typed for files
+        if (!navigator.canShare || navigator.canShare(shareData)) {
+          await navigator.share(shareData);
+          return;
+        }
+      }
+      // Fallback: copy data URL to clipboard
+      await navigator.clipboard.writeText(dataUrl);
+      alert('Image link copied to clipboard. You can paste and share it.');
+    } catch (err) {
+      console.error('Share failed, falling back to download:', err);
+      // Final fallback: download
+      handleDownload();
+    }
   };
 
   // Style Further feature removed
@@ -231,6 +271,9 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({ product, baseImage, onCl
                 <>
                     <button onClick={handleDownload} className="w-full sm:w-auto bg-[#2aa198] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#1f7f7a] transition transform hover:scale-105">
                         Download
+                    </button>
+                    <button onClick={handleShare} className="w-full sm:w-auto bg-[#268bd2] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#1a6ea6] transition transform hover:scale-105">
+                        Share
                     </button>
                     <button onClick={onClose} className="w-full sm:w-auto bg-gray-200 text-gray-700 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition transform hover:scale-105">
                         Close
