@@ -1,0 +1,7 @@
+{
+  "name": "Virtual Fashion Try-On",
+  "description": "An AI-powered application that allows users to virtually try on fashion items by uploading their photos. Users can select clothing and accessories, and the app generates an image of them wearing the selected items.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

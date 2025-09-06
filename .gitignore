@@ -1,0 +1,44 @@
+# Node / Vite
+node_modules/
+dist/
+dist-ssr/
+.vite/
+.vite-*/
+*.cache
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+*.tsbuildinfo
+coverage/
+
+# Env files (do not commit secrets)
+.env
+.env.*
+!.env.example
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Build artifacts
+*.map
+
+# Generated try-on images (optional; keep if you want them tracked)
+assets/tryon_*.png
+
+# Python backend (virtualenv, caches)
+backend/.venv/
+backend/venv/
+backend/__pycache__/
+backend/.pytest_cache/
+backend/.mypy_cache/
+backend/*.pyc
+
+# Archives
+*.zip
+
+# Keep the implementation brief tracked (not ignored by default, kept for clarity)
+!Implementation.md
