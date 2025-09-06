@@ -8,7 +8,7 @@ let ai: GoogleGenAI | null = null;
 if (API_KEY) {
   ai = new GoogleGenAI({ apiKey: API_KEY });
 }
-
+// Image + Text-to-Image (Editing) 
 export const editImageWithGemini = async (
   base64ImageData: string,
   mimeType: string,
@@ -65,7 +65,7 @@ export const editImageWithGemini = async (
   }
 };
 
-// Text-to-image generation: create a new product image from a prompt
+// Text-to-Image
 export const generateImageFromPrompt = async (
   prompt: string
 ): Promise<{ data: string; mimeType: string } | null> => {
@@ -101,7 +101,7 @@ export const generateImageFromPrompt = async (
   }
 };
 
-
+// Multi-Image to Image (Composition & Style Transfer)
 export const editImageWithGeminiComposite = async (
   params: {
     base: { data: string; mimeType: string };

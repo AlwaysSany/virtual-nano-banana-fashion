@@ -123,6 +123,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ onClose, onCre
     }
   };
 
+
   async function compressGenerativeImage(
     img: { data: string; mimeType: string },
     maxDim: number,
@@ -272,7 +273,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ onClose, onCre
           </div>
         </div>
 
-        <div className="mt-6 flex gap-3 justify-end">
+        <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-end">
           <button onClick={onClose} className="bg-gray-200 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-300">Cancel</button>
           <button onClick={handleSave} disabled={!canSave} className="bg-[#268bd2] text-white font-bold py-2 px-4 rounded-lg hover:bg-[#1a6ea6] disabled:opacity-50">Save Product</button>
         </div>
