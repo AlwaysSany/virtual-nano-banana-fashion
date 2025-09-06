@@ -169,7 +169,7 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ onClose, onCre
           </svg>
         </button>
 
-        <h2 className="text-2xl font-bold mb-2">Add Product (AI Generate)</h2>
+        <h2 className="text-2xl font-bold mb-2">Add Product</h2>
         <p className="text-gray-600 mb-4">Enter a prompt to generate a product image. Optionally apply a logo with high-fidelity detail preservation, then fill in details and save.</p>
 
         {error && <div className="bg-red-100 text-red-700 p-3 rounded-lg mb-4">{error}</div>}
@@ -220,12 +220,23 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ onClose, onCre
                       <option value="large">Large</option>
                     </select>
                   </div>
-                  <input
+                  <select
                     className="border rounded p-2 text-sm"
-                    placeholder="Logo color (optional)"
                     value={logoColor}
                     onChange={(e) => setLogoColor(e.target.value)}
-                  />
+                  >
+                    <option value="">No specific color</option>
+                    <option value="white">White</option>
+                    <option value="black">Black</option>
+                    <option value="red">Red</option>
+                    <option value="blue">Blue</option>
+                    <option value="green">Green</option>
+                    <option value="yellow">Yellow</option>
+                    <option value="orange">Orange</option>
+                    <option value="purple">Purple</option>
+                    <option value="pink">Pink</option>
+                    <option value="gray">Gray</option>
+                  </select>
                   <button
                     onClick={handleApplyLogo}
                     disabled={!logoFile || isApplyingLogo}
@@ -264,12 +275,22 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ onClose, onCre
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">Price</label>
-            <input
+            <select
               className="w-full border border-gray-300 rounded-md p-2 text-sm"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
-              placeholder="$99.99"
-            />
+            >
+              <option value="$9.99">$9.99</option>
+              <option value="$14.99">$14.99</option>
+              <option value="$19.99">$19.99</option>
+              <option value="$24.99">$24.99</option>
+              <option value="$29.99">$29.99</option>
+              <option value="$39.99">$39.99</option>
+              <option value="$49.99">$49.99</option>
+              <option value="$59.99">$59.99</option>
+              <option value="$79.99">$79.99</option>
+              <option value="$99.99">$99.99</option>
+            </select>
           </div>
         </div>
 

@@ -5,9 +5,10 @@ import { Product } from '../types';
 interface ProductCardProps {
   product: Product;
   onTryNow: (product: Product) => void;
+  onPreview?: (product: Product) => void;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, onTryNow }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, onTryNow, onPreview }) => {
   const [imgError, setImgError] = useState(false);
   const initials = useMemo(() => {
     return product.name
@@ -18,7 +19,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onTryNow }) =
   }, [product.name]);
   return (
     <div className="bg-white/10 backdrop-blur-md rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
-      <div className="h-40 sm:h-48 bg-white/20 flex items-center justify-center overflow-hidden">
+      <div
+        className="h-40 sm:h-48 bg-white/20 flex items-center justify-center overflow-hidden cursor-zoom-in"
+        onClick={() => onPreview && onPreview(product)}
+        title="Click to preview"
+      >
         {!imgError ? (
           <img
             src={product.imageSrc}

@@ -48,3 +48,17 @@ Case 3: Mask/Region Editing
 i have created a sample html web page for initial step now my next step is like below,
 1. create a frontend with react to convert this html to component based web app
 2. create a backend with fast api that will do the all image operations using google gemini 2.5 flash model that will be invoked from frontend during product try on.
+
+---
+
+# Kaggle Writeup
+
+## Project Title
+Virtual Nano Banana: High-Fidelity AI Fashion Try‑On with Gemini 2.5 Flash Image
+
+## Problem Statement (≤200 words)
+This web app demonstrates a realistic AI fashion try‑on pipeline using Gemini 2.5 Flash Image, with the model integrated directly into end‑user flows rather than as isolated demos. In `components/AddProductModal.tsx`, we use text‑to‑image to generate clean catalog photos from short prompts (e.g., “orange high‑top sneakers on a white background”). The same modal optionally applies a brand/logo in a high‑fidelity step by calling `editImageWithGeminiComposite()` with the logo as a reference and the generated product as the base, using instructions that preserve garment details while blending the logo with correct folds, texture, lighting, and perspective.
+
+Once a product exists (either from our static `constants.ts` or just added in‑session), users open `components/TryOnModal.tsx` to “wear” it. We prioritize the composite flow by passing the product image as a reference and the user photo as the base, with prompts tuned to avoid collage and to keep identity, pose, skin tone, hair, and background unchanged. Users can iteratively refine results via the “Put me on” input, which issues follow‑up edits on the latest output, enabling multi‑turn adjustments (e.g., add sunglasses, tweak color).
+
+Downloads and sharing are supported for quick review. Overall, by chaining generation, high‑fidelity logo application, catalog use, try‑on, and iterative refinement, the app shows how Gemini’s visual capabilities power a cohesive, production‑style try‑on experience.

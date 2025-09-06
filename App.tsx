@@ -6,6 +6,7 @@ import { CategoryFilter } from './components/CategoryFilter';
 import { ProductGrid } from './components/ProductGrid';
 import { TryOnModal } from './components/TryOnModal';
 import { AddProductModal } from './components/AddProductModal';
+import { ImageLightbox } from './components/ImageLightbox';
 import { Product, Category } from './types';
 import { PRODUCTS, CATEGORIES } from './constants';
 
@@ -16,6 +17,7 @@ export default function App() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [userProducts, setUserProducts] = useState<Product[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
   
 
   // No persistence; user products are in-memory only for this session
@@ -81,7 +83,7 @@ export default function App() {
               Add Product
             </button>
           </div>
-          <ProductGrid products={filteredProducts} onTryNow={handleTryNow} />
+          <ProductGrid products={filteredProducts} onTryNow={handleTryNow} onPreview={(p) => setPreviewProduct(p)} />
         </main>
       </div>
 
@@ -98,6 +100,10 @@ export default function App() {
           onClose={() => setIsAddModalOpen(false)}
           onCreate={(data) => handleCreateProduct(data)}
         />
+      )}
+
+      {previewProduct && (
+        <ImageLightbox product={previewProduct} onClose={() => setPreviewProduct(null)} />
       )}
     </div>
   );
