@@ -7,6 +7,7 @@ import { ProductGrid } from './components/ProductGrid';
 import { TryOnModal } from './components/TryOnModal';
 import { AddProductModal } from './components/AddProductModal';
 import { Product, Category } from './types';
+import { getUserProducts, setUserProducts as persistUserProducts } from './services/storage';
 import { PRODUCTS, CATEGORIES } from './constants';
 
 export default function App() {
@@ -18,33 +19,28 @@ export default function App() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [storageWarning, setStorageWarning] = useState<string | null>(null);
 
-  // Load user products from localStorage on mount
+  // Load user products using IndexedDB helper (with fallbacks inside)
   useEffect(() => {
-    try {
-      let raw = localStorage.getItem('userProducts');
-      if (!raw) {
-        raw = sessionStorage.getItem('userProducts') || raw;
+    (async () => {
+      const loaded = await getUserProducts();
+      if (loaded && Array.isArray(loaded)) {
+        setUserProducts(loaded);
       }
-      if (raw) {
-        const parsed: Product[] = JSON.parse(raw);
-        setUserProducts(parsed);
-      }
-    } catch {}
+    })();
   }, []);
 
   // Persist user products on change
   useEffect(() => {
-    try {
-      localStorage.setItem('userProducts', JSON.stringify(userProducts));
-      setStorageWarning(null);
-    } catch (e) {
-      try {
-        sessionStorage.setItem('userProducts', JSON.stringify(userProducts));
+    (async () => {
+      const where = await persistUserProducts(userProducts);
+      if (where === 'idb' || where === 'local') {
+        setStorageWarning(null);
+      } else if (where === 'session') {
         setStorageWarning('Saved to session only. Your added products will be kept for this tab but may not persist across browser restarts.');
-      } catch {
+      } else {
         setStorageWarning('Could not persist added products. Try generating smaller images or clearing storage.');
       }
-    }
+    })();
   }, [userProducts]);
 
   const allProducts = useMemo(() => {
@@ -76,22 +72,18 @@ export default function App() {
     const maxId = allProducts.reduce((m, p) => Math.max(m, p.id), 0);
     const next: Product = { id: maxId + 1, ...partial } as Product;
     // Update state optimistically
-    setUserProducts((prev) => {
-      const updated = [...prev, next];
-      // Try immediate write to catch quota errors early
-      try {
-        localStorage.setItem('userProducts', JSON.stringify(updated));
+    setUserProducts((prev) => [...prev, next]);
+    // Also persist immediately to surface any warnings
+    (async () => {
+      const where = await persistUserProducts([...userProducts, next]);
+      if (where === 'idb' || where === 'local') {
         setStorageWarning(null);
-      } catch (e) {
-        try {
-          sessionStorage.setItem('userProducts', JSON.stringify(updated));
-          setStorageWarning('Saved to session only. Your added products will be kept for this tab but may not persist across browser restarts.');
-        } catch {
-          alert('Failed to persist product. The image may be too large for storage. Try a simpler prompt or smaller image.');
-        }
+      } else if (where === 'session') {
+        setStorageWarning('Saved to session only. Your added products will be kept for this tab but may not persist across browser restarts.');
+      } else {
+        alert('Failed to persist product. The image may be too large for storage. Try a simpler prompt or smaller image.');
       }
-      return updated;
-    });
+    })();
     setIsAddModalOpen(false);
   };
 
