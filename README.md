@@ -133,10 +133,12 @@ If Advanced Styling doesn’t start, ensure you clicked “Style Further” afte
 
 ## Roadmap
 - Region/mask‑based selective editing
-- Multi‑product layering in one pass
-- Gallery, share, and download management
-- Optional full server pipeline for editing and storage
-- Persist user sessions and saved looks
+- Multi‑product layering in one pass like selecting/dragging multiple products on Try On modal.
+- Saved Gallery, share on social media, and download management
+- Optional full server pipeline for editing and storage(preferably using fastapi)
+- Persist user sessions and saved looks using backend api(preferably using fastapi)
+- Generate video from the try-on image using google VEO 3 API.
+- Add AI generated product images to the catalog.
 
 ## License
 MIT
