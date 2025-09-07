@@ -6,37 +6,46 @@ An AI‑powered web app that lets users virtually try on fashion items (shirts, 
 - Searchable, filterable product catalog (outerwear, hats, eyewear, shoes, shirts, pants)
 - Try Now modal to upload a photo and generate a realistic try‑on
 - Advanced Styling mode to add more products on top of the latest generated result
+- Text-to-Product generation (Google Gemini “Nano Banana” flow): generate new product images from a prompt
+- Text + Product Image to User Image: realistically place referenced product(s) on the person image
+- Virtual Try‑On with multiple product references (composite): support for composing one or more product reference images
+- ElevenLabs Speech‑to‑Text input in prompts: mic button in Add Product and Try‑On dialogs
 - Solarized‑dark theme, responsive UI, accessible focus states
-- Assets‑driven catalog (images in `assets/`); no emojis
+- Assets‑driven catalog (images in `assets/`)
 
 ## Architecture
 - Frontend: React + Vite
 - Styling: Tailwind via CDN (see `index.html`)
-- Image editing: Google Gemini 2.5 Flash (image preview) via `@google/genai`
+- Image generation/editing: Google Gemini 2.5 Flash (image preview) via `@google/genai`
+- Speech‑to‑Text: ElevenLabs STT via REST API
 - Data: `constants.ts` contains categories and products referencing `assets/`
 
 ## Project Structure
 ```
 virtual-nano-banana-fashion/
-├─ assets/                      # Product images (catalog sources)
-├─ components/                  # React components
+├─ assets/                           # Product images (catalog sources)
+├─ components/                       # React components
+│  ├─ AddProductModal.tsx            # Text-to-product flow (prompt -> image) + logo application
 │  ├─ AdvancedStylePreview.tsx
 │  ├─ CategoryFilter.tsx
 │  ├─ Header.tsx
+│  ├─ MicButton.tsx                  # Reusable mic control (MediaRecorder + STT)
 │  ├─ ProductCard.tsx
 │  ├─ ProductGrid.tsx
 │  ├─ SearchBar.tsx
 │  ├─ Spinner.tsx
-│  └─ TryOnModal.tsx
+│  └─ TryOnModal.tsx                 # Try-on + "Put me on" instruction input
 ├─ services/
-│  └─ geminiService.ts          # Gemini 2.5 Flash image edit call
-├─ App.tsx                      # App shell, filters, modal state, advanced styling
-├─ constants.ts                 # Categories + product catalog (images only)
-├─ types.ts                     # TS types (Product, Category)
-├─ index.html                   # Vite entry + Tailwind CDN + import maps
-├─ index.tsx                    # React mount
-├─ .env                         # Local environment (VITE_GEMINI_API_KEY)
-└─ README.md                    # This file
+│  ├─ elevenlabsSTT.ts               # ElevenLabs Speech-to-Text service
+│  └─ geminiService.ts               # Gemini 2.5 Flash image gen/edit (text, image+text, composite)
+├─ App.tsx                           # App shell, filters, modal state, advanced styling routing
+├─ constants.ts                      # Categories + product catalog (images only)
+├─ types.ts                          # TS types (Product, Category)
+├─ index.html                        # Vite entry + Tailwind CDN
+├─ index.tsx                         # React mount
+├─ env.local                         # Local environment (keys for Vite)
+├─ vite-env.d.ts                     # Vite env typings (e.g., VITE_ELEVENLABS_API_KEY)
+└─ README.md                         # This file
 ```
 
 ## Setup
@@ -49,9 +58,13 @@ npm install
 ```
 
 ### 2) Environment
-Create or update `.env` at the project root:
+Create or update `env.local` (or `.env.local`) at the project root with the following variables:
 ```bash
+# Google Gemini (image generation + editing)
 VITE_GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+
+# ElevenLabs Speech-to-Text (used client-side by the mic button)
+VITE_ELEVENLABS_API_KEY=YOUR_ELEVENLABS_API_KEY
 ```
 Restart the dev server after changing env values.
 
@@ -66,6 +79,8 @@ Open http://localhost:5173
 - Upload a photo and click “Generate Try‑On”.
 - When the result appears, click “Style Further” to stage the generated image.
 - Choose another product and click “Try Now” again; the modal switches to Advanced Styling and applies the new item to the staged image.
+- To create a brand‑new product from text, use Add Product, enter a prompt (or use the mic), and click Generate Image.
+- Use the mic buttons (powered by ElevenLabs STT) in Add Product and in the Try‑On “Put me on” area to dictate prompts.
 
 If Advanced Styling doesn’t start, ensure you clicked “Style Further” after a successful generation.
 
@@ -84,27 +99,43 @@ If Advanced Styling doesn’t start, ensure you clicked “Style Further” afte
 - Model: `gemini-2.5-flash-image-preview`
 - Reads key from `import.meta.env.VITE_GEMINI_API_KEY`
 - Returns `{ data, mimeType }` (base64 image)
+- Flows supported:
+  - Text → Product Image: `generateImageFromPrompt(prompt)`
+  - Image + Text → Edited Image: `editImageWithGemini(base64, mimeType, productName)`
+  - Multi‑image Composite (references + base + instruction): `editImageWithGeminiComposite({ base, references, instruction })`
 
+## ElevenLabs STT Integration
+- File: `services/elevenlabsSTT.ts`
+- Uses REST endpoint `POST https://api.elevenlabs.io/v1/speech-to-text` with `model_id=scribe_v1`
+- Reads key from `import.meta.env.VITE_ELEVENLABS_API_KEY`
+- UI usage:
+  - Add Product: `components/AddProductModal.tsx` (mic below Prompt)
+  - Try‑On: `components/TryOnModal.tsx` (mic in "Put me on" collapsible)
+  - Shared control: `components/MicButton.tsx` (MediaRecorder + upload + transcript)
 
 ## Troubleshooting
-- Missing key
-  - Ensure `.env` has `VITE_GEMINI_API_KEY=...`
-  - Restart the dev server after editing `.env`
-- Advanced Styling doesn’t start
+- __Missing key__
+  - Ensure `env.local` has `VITE_GEMINI_API_KEY` and `VITE_ELEVENLABS_API_KEY`
+  - Restart the dev server after editing env values
+- __Advanced Styling doesn’t start__
   - Click “Style Further” after the first successful generation
   - Look for the Advanced Styling banner above the grid
   - The next modal should say “Adding to your styled image.”
-- No image returned from Gemini
+- __No image returned from Gemini__
   - Check browser console logs
   - Verify API key validity, quota, and model availability
-- Product image not appearing
+- __Product image not appearing__
   - Ensure `imageSrc` filename matches exactly a file in `assets/`
+- __Mic not recording / transcription fails__
+  - Grant microphone permission in the browser
+  - Some browsers require `https://` for microphone access in production
+  - Verify `VITE_ELEVENLABS_API_KEY`
 
 ## Roadmap
 - Region/mask‑based selective editing
 - Multi‑product layering in one pass
 - Gallery, share, and download management
-- Optional full server pipeline (FastAPI) for editing and storage
+- Optional full server pipeline for editing and storage
 - Persist user sessions and saved looks
 
 ## License
