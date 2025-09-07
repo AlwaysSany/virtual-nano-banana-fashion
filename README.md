@@ -2,11 +2,20 @@
 
 An AI‑powered web app that lets users virtually try on fashion items (shirts, pants/jeans, shoes, hats, eyewear) using their own photo. Users can continue styling a generated image with additional items using the Advanced Styling mode.
 
+**HomPage,**
+
 <img width="1884" height="858" alt="Image" src="https://github.com/user-attachments/assets/5f141649-7a9f-4904-953f-74889063915f" />
+<br/>
 
-See other pages: https://github.com/AlwaysSany/virtual-nano-banana-fashion/issues/1
+**Other Pages,**
 
-Full Working Demo: https://youtu.be/q0iNOMOYygA
+| Preview 1 | Preview 2 | Preview 3 |
+|-----------|-----------|-----------|
+| <img src="https://github.com/user-attachments/assets/5f141649-7a9f-4904-953f-74889063915f" width="250"/> | <img src="https://github.com/user-attachments/assets/9956e61f-2245-4990-ae2b-68b82c84f9a2" width="250"/> | <img src="https://github.com/user-attachments/assets/606dfeef-7a5f-42e3-ba12-b2c39dac991d" width="250"/> |
+| <img src="https://github.com/user-attachments/assets/4fad3d07-761e-4603-a03d-074b49eff034" width="250"/> | <img src="https://github.com/user-attachments/assets/3e104f54-3647-4b67-b555-ed5292d79b67" width="250"/> | <img src="https://github.com/user-attachments/assets/4f936954-c91c-45de-b7dd-c1af048315ef" width="250"/> |
+| <img src="https://github.com/user-attachments/assets/01ed39fe-0e1f-4163-ba45-d8ba20d3bad4" width="250"/> | <img src="https://github.com/user-attachments/assets/471f5200-6127-4d66-bf38-1ec843df83c4" width="250"/> | <img src="https://github.com/user-attachments/assets/1237fd86-7560-4c31-a861-c570fe57e32e" width="250"/> |
+
+**Full Working Demo:** https://youtu.be/q0iNOMOYygA
 
 ## Features
 - Searchable, filterable product catalog (outerwear, hats, eyewear, shoes, shirts, pants)
