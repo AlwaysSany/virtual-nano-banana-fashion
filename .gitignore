@@ -41,4 +41,7 @@ backend/*.pyc
 *.zip
 
 # Keep the implementation brief tracked (not ignored by default, kept for clarity)
-!Implementation.md
+Implementation.md
+implementations.md
+Working Demo.mp4
+screenshots
