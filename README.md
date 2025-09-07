@@ -2,7 +2,9 @@
 
 An AI‑powered web app that lets users virtually try on fashion items (shirts, pants/jeans, shoes, hats, eyewear) using their own photo. Users can continue styling a generated image with additional items using the Advanced Styling mode.
 
-[Put images here]
+<img width="1884" height="858" alt="Image" src="https://github.com/user-attachments/assets/5f141649-7a9f-4904-953f-74889063915f" />
+
+See other pages: https://github.com/AlwaysSany/virtual-nano-banana-fashion/issues/1
 
 Full Working Demo: https://youtu.be/q0iNOMOYygA
 
