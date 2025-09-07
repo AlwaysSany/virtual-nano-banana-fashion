@@ -1,6 +1,6 @@
 # Virtual Fashion Try‑On
 
-An AI‑powered web app that lets users virtually try on fashion items (shirts, pants/jeans, shoes, hats, eyewear) using their own photo. Users can continue styling a generated image with additional items using the Advanced Styling mode.
+An AI‑powered web app that lets users virtually try on fashion items (shirts, pants/jeans, shoes, hats, eyewear) using their own photo. Users can continue styling a generated image with additional items using the Advanced Styling mode and their speech.
 
 **HomPage,**
 
