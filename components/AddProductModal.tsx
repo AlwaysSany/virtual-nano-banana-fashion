@@ -3,6 +3,7 @@ import { Category, Product } from '../types';
 import { CATEGORIES } from '../constants';
 import { generateImageFromPrompt, editImageWithGeminiComposite } from '../services/geminiService';
 import { UploadArea } from './UploadArea';
+import { MicButton } from './MicButton';
 
 interface AddProductModalProps {
   onClose: () => void;
@@ -175,13 +176,23 @@ export const AddProductModal: React.FC<AddProductModalProps> = ({ onClose, onCre
         {error && <div className="bg-red-100 text-red-700 p-3 rounded-lg mb-4">{error}</div>}
 
         <label className="block text-sm font-semibold text-gray-700 mb-2">Prompt</label>
-        <textarea
-          className="w-full border border-gray-300 rounded-md p-2 text-sm mb-3"
-          placeholder="e.g., A professionally shot photo of orange high-top sneakers on a plain white background"
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          rows={3}
-        />
+        <div className="mb-3">
+          <textarea
+            className="w-full border border-gray-300 rounded-md p-2 text-sm"
+            placeholder="e.g., A professionally shot photo of orange high-top sneakers on a plain white background"
+            value={prompt}
+            onChange={(e) => setPrompt(e.target.value)}
+            rows={3}
+          />
+          <div className="mt-2">
+            <MicButton
+              onTranscript={(text) =>
+                setPrompt((prev) => (prev ? prev + (prev.endsWith(' ') ? '' : ' ') + text : text))
+              }
+              title="Speak your product idea"
+            />
+          </div>
+        </div>
         <div className="flex gap-3">
           <button
             onClick={handleGenerate}

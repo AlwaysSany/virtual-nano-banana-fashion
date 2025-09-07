@@ -4,6 +4,7 @@ import { Product } from '../types';
 import { editImageWithGemini, editImageWithGeminiComposite } from '../services/geminiService';
 import { UploadArea } from './UploadArea';
 import { Spinner } from './Spinner';
+import { MicButton } from './MicButton';
 
 interface TryOnModalProps {
   product: Product;
@@ -236,13 +237,23 @@ export const TryOnModal: React.FC<TryOnModalProps> = ({ product, baseImage, onCl
                   {putMeOnOpen && (
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">Describe where you want to put yourself?</label>
-                      <textarea
-                        className="w-full border border-gray-300 rounded-md p-2 text-sm"
-                        placeholder="e.g., Put me on a beach with some friends with this exact look and show me how it would look"
-                        value={putMeOnText}
-                        onChange={(e) => setPutMeOnText(e.target.value)}
-                        rows={3}
-                      />
+                      <div>
+                        <textarea
+                          className="w-full border border-gray-300 rounded-md p-2 text-sm"
+                          placeholder="e.g., Put me on a beach with some friends with this exact look and show me how it would look"
+                          value={putMeOnText}
+                          onChange={(e) => setPutMeOnText(e.target.value)}
+                          rows={3}
+                        />
+                        <div className="mt-2">
+                          <MicButton
+                            onTranscript={(text) =>
+                              setPutMeOnText((prev) => (prev ? prev + (prev.endsWith(' ') ? '' : ' ') + text : text))
+                            }
+                            title="Speak your scene description"
+                          />
+                        </div>
+                      </div>
                       <div className="mt-3">
                         <button
                           onClick={handlePutMeOn}
