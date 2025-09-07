@@ -2,6 +2,10 @@
 
 An AI‑powered web app that lets users virtually try on fashion items (shirts, pants/jeans, shoes, hats, eyewear) using their own photo. Users can continue styling a generated image with additional items using the Advanced Styling mode.
 
+[Put images here]
+
+Full Working Demo: https://youtu.be/q0iNOMOYygA
+
 ## Features
 - Searchable, filterable product catalog (outerwear, hats, eyewear, shoes, shirts, pants)
 - Try Now modal to upload a photo and generate a realistic try‑on
