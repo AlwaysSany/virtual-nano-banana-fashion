@@ -154,6 +154,7 @@ If Advanced Styling doesn’t start, ensure you clicked “Style Further” afte
 - Persist user sessions and saved looks using backend api(preferably using fastapi)
 - Generate video from the try-on image using google VEO 3 API.
 - Add AI generated product images to the catalog.
+- Use more feature for image with FAL(due to no credit, this version doesn't have it at all)
 
 ## License
 MIT
